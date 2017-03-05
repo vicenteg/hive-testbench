@@ -29,6 +29,7 @@ TABLES="part partsupp supplier customer orders lineitem nation region"
 # Get the parameters.
 SCALE=$1
 DIR=$2
+FORMAT=${3:-orc}
 BUCKETS=13
 if [ "X$DEBUG_SCRIPT" != "X" ]; then
 	set -x
@@ -74,7 +75,7 @@ else
 	SCHEMA_TYPE=partitioned
 fi
 
-DATABASE=tpch_${SCHEMA_TYPE}_orc_${SCALE}
+DATABASE=tpch_${SCHEMA_TYPE}_${FORMAT}_${SCALE}
 
 for t in ${TABLES}
 do
@@ -83,7 +84,7 @@ do
 	    -d DB=${DATABASE} \
 	    -d SOURCE=tpch_text_${SCALE} -d BUCKETS=${BUCKETS} \
             -d SCALE=${SCALE} \
-	    -d FILE=orc"
+	    -d FILE=$FORMAT"
 	runcommand "$COMMAND"
 	if [ $? -ne 0 ]; then
 		echo "Command failed, try 'export DEBUG_SCRIPT=ON' and re-running"
